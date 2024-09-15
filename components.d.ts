@@ -7,8 +7,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    DataAnalyse: typeof import('./src/components/dataAnalyse.vue')['default']
     DataAnalysis: typeof import('./src/components/dataAnalysis.vue')['default']
+    GoogleMaps: typeof import('./src/components/googleMaps.vue')['default']
     HeaderMenu: typeof import('./src/components/headerMenu.vue')['default']
     MainMenu: typeof import('./src/components/mainMenu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

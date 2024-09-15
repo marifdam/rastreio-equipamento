@@ -14,13 +14,17 @@
 </template>
 
 <script>
+import { defineComponent, ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import Header from "../components/headerMenu.vue"
 
-export default {
+export default defineComponent({
   components:{Header},
-  data: function () {
-    return {
-      items: [{
+  setup(){
+    const store = useStore();
+    const router = useRouter();
+      const items = [{
         name: "Rastrear pacote",
         value: "track"
       },
@@ -30,18 +34,20 @@ export default {
       }
 
       ]
+    const goToTracking = () => {
+      router.push({name:"tracking"})
     }
-  },
-  methods: {
-    goToTracking() {
-      this.$router.push({name:"tracking"})
-    },
-    goToDataAnalyse() {
-      this.$router.push({name:"dataAnalysis"})
-    },
+    const goToDataAnalysis = () => {
+      router.push({name:"dataAnalysis"})
+    }
+    return {
+      goToTracking,
+      goToDataAnalysis
+    }
 
   }
-}
+})
+
 </script>
 <style lang="scss">
 @use '../styles/settings.scss';

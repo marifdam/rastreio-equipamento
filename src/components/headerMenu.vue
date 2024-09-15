@@ -12,13 +12,19 @@
 </div>
 </template>
 <script>
-export default{
-  methods:{
-    goToMain(){
-      this.$router.push({name:"main"})
+import { defineComponent, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+export default defineComponent({
+  setup(){
+    const router = useRouter()
+    const goToMain = () => {
+      router.push({name:"main"})
+    }
+    return {
+      goToMain
     }
   }
-}
+})
 </script>
 <style lang="scss">
 .v-toolbar-title__placeholder {

@@ -11,18 +11,24 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@jamescoyle/vue-icon": "^0.1.2",
+    "@fawmi/vue-google-maps": "^0.9.79",
     "@mdi/font": "7.4.47",
     "@mdi/js": "^7.4.47",
     "core-js": "^3.37.1",
+    "i": "^0.3.7",
     "install": "^0.13.0",
+    "jquery": "^3.7.1",
     "npm": "^10.8.3",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
-    "vuetify": "^3.6.11"
+    "vue-google-maps-community-fork": "^0.3.1",
+    "vuetify": "^3.6.11",
+    "vuex": "^4.1.0",
+    "vuex-module-decorators": "^2.0.0"
   },
   "devDependencies": {
     "@babel/types": "^7.24.7",
+    "@types/jquery": "^3.5.30",
     "@types/node": "^20.14.10",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-typescript": "^13.0.0",

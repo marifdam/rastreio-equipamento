@@ -5,6 +5,7 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import ViteFonts from 'unplugin-fonts/vite'
 import VueRouter from 'unplugin-vue-router/vite'
 
+
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
@@ -53,5 +54,13 @@ export default defineConfig({
     fs: {
       cachedChecks: false
     }
+  },
+  optimizeDeps: {
+    include: [
+      "@fawmi/vue-google-maps",
+      "fast-deep-equal",
+      "jquery",
+
+    ],
   },
 })
