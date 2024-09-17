@@ -1,4 +1,4 @@
-import { State } from "./state";
+import { State } from './state';
 
 export const mutations = {
   setDatabase(state: State, database: object) {
@@ -6,5 +6,5 @@ export const mutations = {
   },
   setLastSearch(state: State, lastSearch: object) {
     state.lastSearch = lastSearch;
-  },
+  }
 };

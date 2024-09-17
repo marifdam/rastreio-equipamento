@@ -13,24 +13,22 @@
       ></v-text-field>
     </div>
     <div id="tableInfo">
-        <v-data-table
-          theme="light"
-          :headers="headers"
-          :items="items"
-          density="compact"
-          item-key="name"
-        >
-        </v-data-table>
-      </div>
-      </div>
-
+      <v-data-table
+        theme="light"
+        :headers="headers"
+        :items="items"
+        density="compact"
+        item-key="name"
+      >
+      </v-data-table>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router"
-
+import { useRouter } from "vue-router";
 
 const input = ref();
 const store = useStore();
@@ -40,27 +38,45 @@ const totalHours = ref(0);
 let operating = ref(0);
 let mainteinance = ref(0);
 let stopped = ref(0);
+let earning = 0;
 const headers = [
-    { title: "Operando %", align: "start" as const, value: "operating", sortable: false },
-    { title: "Parado ou manutenção%", align: "start" as const, value: "stopped", sortable: false },
-  ];
-  const items = ref([{
-  operating: parseFloat(operating.value.toFixed(2)),  
-  stopped: parseFloat(stopped.value.toFixed(2)),     
-}]);
-
-
+  {
+    title: "Operando %",
+    align: "start" as const,
+    value: "operating",
+    sortable: false,
+  },
+  {
+    title: "Parado ou manutenção%",
+    align: "start" as const,
+    value: "stopped",
+    sortable: false,
+  },
+  {
+    title: "Ganho",
+    align: "start" as const,
+    value: "earning",
+    sortable: false,
+  },
+];
+const items = ref([
+  {
+    operating: parseFloat(operating.value.toFixed(2)),
+    stopped: parseFloat(stopped.value.toFixed(2)),
+    earning: earning,
+  },
+]);
 
 async function search(model: string, input: string) {
-   await store.dispatch("search", {
+  await store.dispatch("search", {
     selection: model,
     input: input,
   });
+  calculateHours();
 }
 
 const calculateHours = async () => {
   const database = await store.getters["getLastSearch"];
-  console.log(database)
 
   if (database && database.state && database.state.length > 1) {
     for (let i = 1; i < database.state.length; i++) {
@@ -70,7 +86,7 @@ const calculateHours = async () => {
         currentDate.getTime() - previousDate.getTime();
       const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
       totalHours.value += differenceInHours;
-
+      earning += Number(database.state[i].value);
       switch (database.state[i].status) {
         case "Operando":
           operating.value += differenceInHours;
@@ -87,13 +103,15 @@ const calculateHours = async () => {
 
     operating.value = (operating.value * 100) / totalHours.value;
     mainteinance.value = (mainteinance.value * 100) / totalHours.value;
-    stopped.value = (stopped.value * 100) / totalHours.value +mainteinance.value
-    items.value = [{
-      operating: parseFloat(operating.value.toFixed(2)),  
-      stopped: parseFloat(stopped.value.toFixed(2))
-      
-    }];
-
+    stopped.value =
+      (stopped.value * 100) / totalHours.value + mainteinance.value;
+    items.value = [
+      {
+        operating: parseFloat(operating.value.toFixed(2)),
+        stopped: parseFloat(stopped.value.toFixed(2)),
+        earning: earning,
+      },
+    ];
   }
 };
 
@@ -102,15 +120,14 @@ onMounted(async () => {
   store.dispatch("populateFields");
 
   if (input.value) {
-     await store.dispatch("search", {
+    await store.dispatch("search", {
       selection: "model",
       input: input.value,
     });
+    calculateHours();
   }
-  calculateHours();
 });
 </script>
-
 
 <style lang="scss" scoped>
 @use "../styles/settings.scss";

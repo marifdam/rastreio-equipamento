@@ -4,6 +4,5 @@ export interface State {
 }
 export const state: State = {
   database: {},
-  lastSearch: {},
-
+  lastSearch: {}
 };

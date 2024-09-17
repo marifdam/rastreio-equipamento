@@ -12,6 +12,7 @@
         :position="marker"
         :clickable="true"
         :draggable="true"
+        :icon="marker.icon"
         @click="openInfoWindow(marker)"
       >
         <GMapInfoWindow
@@ -20,9 +21,9 @@
           @closeclick="openedMarker = null"
           :options="{ content: infoContent }"
           :opened="openedMarker === marker"
-        >
-        </GMapInfoWindow>
+        />
       </GMapMarker>
+      <GMapPolyline :path="path" :options="polylineOptions" />
     </GMapCluster>
   </GMapMap>
 </template>
@@ -31,6 +32,10 @@
 import { defineComponent, ref, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
+interface Path {
+  lat: number;
+  lng: number;
+}
 interface Position {
   lat: number;
   lng: number;
@@ -38,6 +43,7 @@ interface Position {
   equipmentModel?: string;
   status?: string;
   statusColor?: string;
+  icon?: string;
 }
 
 export default defineComponent({
@@ -46,12 +52,17 @@ export default defineComponent({
       type: Array as () => Position[],
       default: () => [],
     },
+    path: {
+      type: Array as () => Path[],
+      default: () => [],
+    },
   },
   setup(props) {
-        const router = useRouter();
+    const router = useRouter();
 
-    const center = ref<Position>({ lat: 51.093048, lng: 6.84212 });
+    const center = ref<Position>({ lat: -22.908333, lng: -43.196388 });
     const markers = ref<Position[]>(props.positions);
+    const path = ref<Path[]>(props.path);
 
     const openedMarker = ref<Position | null>(null);
 
@@ -62,7 +73,7 @@ export default defineComponent({
       openedMarker.value = marker;
       infoContent.value = `
     <div style="color: black; bottom:30rem;">
-      Nome do equipamento: ${marker.equipmentName }<br>
+      Nome do equipamento: ${marker.equipmentName}<br>
       Modelo: ${marker.equipmentModel}<br>
       Estado: ${marker.status}
       <br><br>
@@ -70,16 +81,30 @@ export default defineComponent({
     </div>
   `;
     };
+    const calculatePathCenter = (path: Path[]): Position => {
+      if (path.length === 0) return center.value;
 
-    const viewHistory = (equipmentModel:string) => {
-      router.push({name: "dataAnalysisWithModel", params:{
-        model:equipmentModel
-      }})
+      const latitudes = path.map((p) => p.lat);
+      const longitudes = path.map((p) => p.lng);
+
+      const avgLat = latitudes.reduce((a, b) => a + b, 0) / latitudes.length;
+      const avgLng = longitudes.reduce((a, b) => a + b, 0) / longitudes.length;
+
+      return { lat: avgLat, lng: avgLng };
+    };
+    const viewHistory = (equipmentModel: string) => {
+      router.push({
+        name: "dataAnalysisWithModel",
+        params: {
+          model: equipmentModel,
+        },
+      });
     };
 
     onMounted(() => {
       (window as any).viewHistory = viewHistory;
     });
+
     watch(
       () => props.positions,
       (newPositions) => {
@@ -91,12 +116,30 @@ export default defineComponent({
       { immediate: true },
     );
 
+    watch(
+      () => props.path,
+      (newPath) => {
+        path.value = newPath.map((pos) => ({
+          lat: pos.lat,
+          lng: pos.lng,
+        }));
+        center.value = calculatePathCenter(path.value);
+      },
+      { immediate: true },
+    );
+
+    const polylineOptions = ref({
+      strokeColor: "#FF0000",
+      strokeWeight: 2,
+    });
+
     return {
       center,
       markers,
       openInfoWindow,
       openedMarker,
       infoContent,
+      polylineOptions,
     };
   },
 });

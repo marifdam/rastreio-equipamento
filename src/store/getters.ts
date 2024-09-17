@@ -1,4 +1,4 @@
-import { State } from "./state";
+import { State } from './state';
 
 export const getters = {
   getDatabase(state: State) {
@@ -6,5 +6,5 @@ export const getters = {
   },
   getLastSearch(state: State) {
     return state.lastSearch;
-  },
+  }
 };
