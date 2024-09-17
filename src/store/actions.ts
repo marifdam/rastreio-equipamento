@@ -1,100 +1,133 @@
-import { ActionContext } from 'vuex';
-import {State } from './state';
-import equipment from "../../data/equipment.json"
-import equipmentModel from "../../data/equipmentModel.json"
-import equipmentPositionHistory from "../../data/equipmentPositionHistory.json"
-import equipmentState from "../../data/equipmentState.json"
-import equipmentStateHistory from "../../data/equipmentStateHistory.json"
-  
-export const actions ={
-    populateFields(context:ActionContext<State,State>){
-        let equipHistory = new Array();
-        equipment.find((eq: any)=>{
-                equipmentPositionHistory.find((eqPosH:any)=>{
-                   if(eq.id == eqPosH.equipmentId){
-                        equipHistory.push({
-                            id: eq.id,
-                            equipmentModelId: eq.equipmentModelId,
-                            codeName: eq.name,
-                            positions:  eqPosH.positions.sort((a: any, b: any) => {
-                                return new Date(a.data).getTime() - new Date(b.data).getTime();
-                            })
+import { ActionContext } from "vuex";
+import { State } from "./state";
+import equipment from "../../data/equipment.json";
+import equipmentModel from "../../data/equipmentModel.json";
+import equipmentPositionHistory from "../../data/equipmentPositionHistory.json";
+import equipmentState from "../../data/equipmentState.json";
+import equipmentStateHistory from "../../data/equipmentStateHistory.json";
 
-                   } ) 
-                }
-
-        })  
-    })
-
-        equipHistory = equipHistory.map((eqH: any) => {
-            const model = equipmentModel.find((eqM: any) => eqH.equipmentModelId === eqM.id);
-            if (model) {
-                return {
-                    ...eqH,
-                    popularName: model.name,          
-                    hourlyEarnings: model.hourlyEarnings 
-                };
-            }
-            return eqH;
-        });
-
-        equipHistory = equipHistory.map((eqH: any) => {
-            const stateHistory = equipmentStateHistory.find((eSH: any) => eqH.id === eSH.equipmentId);
-            if (stateHistory) {
-                return {
-                    ...eqH,
-                    state: stateHistory.states         
-                };
-            }
-            return eqH;
-        });
-
-        equipHistory = equipHistory.map((eqH: any) => {
-            const stateHistory = equipmentStateHistory.find((eSH: any) => eqH.id === eSH.equipmentId);
-            if (stateHistory) {
-                return {
-                    ...eqH,
-                    state: stateHistory.states         
-                };
-            }
-            return eqH;
-        });
-
-        equipHistory = equipHistory.map((eqH: any) => {
-            let updatedStates = eqH.state.map((stateItem: any) => {
-                const matchingState = equipmentState.find((es: any) => es.id === stateItem.equipmentStateId);
-                if (matchingState) {
-                    return {
-                        ...stateItem,
-                        status: matchingState.name,   
-                        statusColor: matchingState.color 
-                    }
-                }
-        
-                return stateItem;
-            })
-            updatedStates = updatedStates.sort(function(a: any, b: any) {
-                return new Date(a.data).getTime() - new Date(b.data).getTime();
-            });
-            
-            return {
-                ...eqH,
-                state: updatedStates 
-            }
-        });
-                
-        context.commit("setDatabase",equipHistory)
-    },
-    async search(context:ActionContext<State,State>,payload: { selection: string, input: string }){
-        const database = context.getters["getDatabase"]
-        let equipment
-        const { selection, input } = payload;
-        if(selection === 'model'){
-            equipment = await database.find((model:any)=>{
-                return model.codeName === input
-            })
+export const actions = {
+  populateFields(context: ActionContext<State, State>) {
+    let equipHistory = new Array();
+    equipment.find((eq: any) => {
+      equipmentPositionHistory.find((eqPosH: any) => {
+        if (eq.id == eqPosH.equipmentId) {
+          equipHistory.push({
+            id: eq.id,
+            equipmentModelId: eq.equipmentModelId,
+            codeName: eq.name,
+            positions: eqPosH.positions.sort((a: any, b: any) => {
+              return new Date(a.data).getTime() - new Date(b.data).getTime();
+            }),
+          });
         }
-        context.commit("setLastSearch",JSON.parse(JSON.stringify(equipment)))
-    },
-    
-}
+      });
+    });
+
+    equipHistory = equipHistory.map((eqH: any) => {
+      const model = equipmentModel.find(
+        (eqM: any) => eqH.equipmentModelId === eqM.id,
+      );
+      if (model) {
+        return {
+          ...eqH,
+          popularName: model.name,
+          hourlyEarnings: model.hourlyEarnings,
+        };
+      }
+      return eqH;
+    });
+
+    equipHistory = equipHistory.map((eqH: any) => {
+      const stateHistory = equipmentStateHistory.find(
+        (eSH: any) => eqH.id === eSH.equipmentId,
+      );
+      if (stateHistory) {
+        return {
+          ...eqH,
+          state: stateHistory.states,
+        };
+      }
+      return eqH;
+    });
+
+    equipHistory = equipHistory.map((eqH: any) => {
+      const stateHistory = equipmentStateHistory.find(
+        (eSH: any) => eqH.id === eSH.equipmentId,
+      );
+      if (stateHistory) {
+        return {
+          ...eqH,
+          state: stateHistory.states,
+        };
+      }
+      return eqH;
+    });
+
+
+    equipHistory = equipHistory.map((eqH: any) => {
+      let updatedStates = eqH.state.map((stateItem: any) => {
+        const matchingState = equipmentState.find(
+          (es: any) => es.id === stateItem.equipmentStateId,
+        );
+        if (matchingState) {
+          return {
+            ...stateItem,
+            status: matchingState.name,
+            statusColor: matchingState.color,
+          };
+        }
+        return stateItem;
+      });
+      updatedStates = updatedStates.sort(function (a: any, b: any) {
+        return new Date(a.data).getTime() - new Date(b.data).getTime();
+      });
+
+      return {
+        ...eqH,
+        state: updatedStates,
+      };
+    });
+
+    context.commit("setDatabase", equipHistory);
+  },
+  async search(
+    context: ActionContext<State, State>,
+    payload: { selection: string; input: string },
+  ) {
+    const database = context.getters["getDatabase"];
+    let equipment = new Array();
+    const { selection, input } = payload;
+    if (selection === "model") {
+      equipment = await database.find((model: any) => {
+        if( model.codeName === input){    
+            return model
+           }
+      });
+    }
+    if (selection === "state") {
+        equipment = database.filter((item: any) => 
+            item.state.some((state: any) => state.status === input)
+          );
+      
+      }
+      context.commit("setLastSearch",equipment)
+    return equipment
+  },
+  async initPositions(context: ActionContext<State, State>) {
+    const database = await context.getters["getDatabase"];
+    let equipmentAndPosition = new Array();
+    database.forEach((element: any) => {
+      equipmentAndPosition.push({
+        equipmentModel: element.codeName,
+        equipmentName: element.popularName,
+        status: element.state[0].status,
+        statusColor: element.state[0].statusColor,
+        lat: element.positions[0].lat,
+        lng: element.positions[0].lon,
+      });
+    });
+
+    return equipmentAndPosition;
+  },
+};

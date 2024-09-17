@@ -1,49 +1,72 @@
 <template>
+  <div class="trackingMachine">
   <Header></Header>
   <div class="search-area">
-    <v-select class="selection" clearable :items="items" items-title="title" items-value="value"
-      v-model="selectedOption" density="default" label="Filtrar por"></v-select>
-    <v-text-field class="search" label="Pesquisar" append-inner-icon="mdi-magnify" v-model="dataInput"
-      @click:append-inner="search"></v-text-field>
+    <v-select
+      class="selection"
+      theme="light"
+      clearable
+      :items="items"
+      items-title="title"
+      items-value="value"
+      v-model="selectedOption"
+      density="default"
+      label="Modo de pesquisa"
+    ></v-select>
+    <v-text-field
+      class="search"
+      label="Pesquisar"
+      append-inner-icon="mdi-magnify"
+      v-model="dataInput"
+      @click:append-inner="search"
+    ></v-text-field>
   </div>
-  <GoogleMaps class="maps" :position="positions"></GoogleMaps>
+  <GoogleMaps class="maps" :positions="positions"></GoogleMaps>
+</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import Header from './headerMenu.vue';
-import GoogleMaps from './googleMaps.vue';
+import { defineComponent, ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import Header from "./headerMenu.vue";
+import GoogleMaps from "./googleMaps.vue";
+
+interface Position {
+  lat: number;
+  lng: number;
+}
 
 export default defineComponent({
   components: { Header, GoogleMaps },
   setup() {
     const store = useStore();
-    const dataInput = ref('');
-    let positions = ref({ lat: 0, lng: 0 })
-    const selectedOption = ref('Selecione');
+    const dataInput = ref("");
+    const positions = ref<Position[]>([]);
+    const selectedOption = ref("Selecione");
     const items = [
       { title: "ESTADO", value: "state" },
       { title: "MODELO", value: "model" },
-      { title: "NOME", value: "nome" }
+      { title: "NOME", value: "nome" },
     ];
 
     const search = async () => {
-      await store.dispatch('search', {
+      await store.dispatch("search", {
         selection: selectedOption.value,
-        input: dataInput.value
-      })
-      const lastPosition = await store.getters["getLastSearch"]
-      positions.value = {
-        lat: parseFloat(lastPosition.positions[0].lat),
-        lng: parseFloat(lastPosition.positions[0].lon)
+        input: dataInput.value,
+      });
+      const lastPosition = await store.getters["getLastSearch"];
+      positions.value = [
+        {
+          lat: parseFloat(lastPosition.positions[0].lat),
+          lng: parseFloat(lastPosition.positions[0].lon),
+        },
+      ];
+    };
 
-      }
-    }
-
-
-    onMounted(() => {
-      store.dispatch('populateFields');
+    onMounted(async () => {
+      store.dispatch("populateFields");
+      const initialPositions = await store.dispatch("initPositions");
+      positions.value = initialPositions;
     });
 
     return {
@@ -51,40 +74,48 @@ export default defineComponent({
       selectedOption,
       items,
       positions,
-      search
+      search,
     };
-  }
+  },
 });
 </script>
 
 <style lang="scss">
-@use '../styles/settings.scss';
+@use "../styles/settings.scss";
 
-.search-area {
-  display: grid;
-  position: relative;
-  left: 3rem;
-  top: 3rem;
+
+.trackingMachine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  width: 100%;
+  height: 100vh; 
+  box-sizing: border-box; 
 }
 
-.selection {
-  position: relative;
-  color: black;
-  width: 16rem;
-  left: 23rem;
-  top: 3rem;
+.search-area {
+  display: flex;
+
+}
+
+.selection{
+  max-width: 250px; 
+  width: 12rem;
+  color:black
 }
 
 .search {
-  position: relative;
-  color: black;
-  width: 16rem;
-  left: 39rem;
-  bottom: 38%;
+  max-width: 250px; 
+  color:black;
+  width: 20rem;
 }
 
 .maps {
-  position: relative;
-  left: 26rem;
+  width: 100%;
+  max-width: 800px; 
+  height: 400px; 
+  margin-right: 19rem;
 }
+
 </style>

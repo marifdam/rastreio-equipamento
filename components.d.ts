@@ -10,6 +10,8 @@ declare module 'vue' {
     DataAnalysis: typeof import('./src/components/dataAnalysis.vue')['default']
     GoogleMaps: typeof import('./src/components/googleMaps.vue')['default']
     HeaderMenu: typeof import('./src/components/headerMenu.vue')['default']
+    Historico: typeof import('./src/components/historico.vue')['default']
+    InfoAdicionais: typeof import('./src/components/infoAdicionais.vue')['default']
     MainMenu: typeof import('./src/components/mainMenu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

@@ -1,24 +1,24 @@
-
-import { registerPlugins } from '@/plugins'
-import router from "./router"
-import store from "./store/module"
+import { registerPlugins } from "@/plugins";
+import router from "./router";
+import store from "./store/module";
 
 // Components
-import App from './App.vue'
-import VueGoogleMaps from 'vue-google-maps-community-fork'
-
+import App from "./App.vue";
+import VueGoogleMaps from "vue-google-maps-community-fork";
 
 // Composables
-import { createApp } from 'vue'
+import { createApp } from "vue";
 
-const app = createApp(App)
+const app = createApp(App);
 
-registerPlugins(app)
+registerPlugins(app);
 
-
-app.use(store)
-app.use(VueGoogleMaps, {
+app.use(store);
+app
+  .use(VueGoogleMaps, {
     load: {
-        key: 'AIzaSyAImfYSh550U8baKLO7B6JT3DD6662tUv0',
+      key: "AIzaSyAImfYSh550U8baKLO7B6JT3DD6662tUv0",
     },
-}).use(router).mount('#app')
+  })
+  .use(router)
+  .mount("#app");

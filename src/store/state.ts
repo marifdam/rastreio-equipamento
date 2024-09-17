@@ -1,8 +1,9 @@
 export interface State {
-    database: Object,
-    lastSearch: Object,
+  database: object;
+  lastSearch: object;
 }
 export const state: State = {
-    database: {},
-    lastSearch: {},
-  };
+  database: {},
+  lastSearch: {},
+
+};
