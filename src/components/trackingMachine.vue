@@ -26,10 +26,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
-import { useStore } from "vuex";
-import Header from "./headerMenu.vue";
-import GoogleMaps from "./googleMaps.vue";
+import { defineComponent, ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import Header from './headerMenu.vue';
+import GoogleMaps from './googleMaps.vue';
 
 interface Position {
   lat: number;
@@ -40,54 +40,52 @@ export default defineComponent({
   components: { Header, GoogleMaps },
   setup() {
     const store = useStore();
-    const dataInput = ref("");
+    const dataInput = ref('');
     let positions = ref<Position[]>([]);
-    const selectedOption = ref("Selecione");
+    const selectedOption = ref('Selecione');
     const items = [
-      { title: "ESTADO", value: "state" },
-      { title: "MODELO", value: "model" },
-      { title: "NOME", value: "name" },
+      { title: 'ESTADO', value: 'state' },
+      { title: 'MODELO', value: 'model' },
+      { title: 'NOME', value: 'name' }
     ];
 
     const search = async () => {
-  let equipments = new Array();
-  await store.dispatch("search", {
-    selection: selectedOption.value,
-    input: dataInput.value,
-  });
+      let equipments = new Array();
+      await store.dispatch('search', {
+        selection: selectedOption.value,
+        input: dataInput.value
+      });
 
-  const lastPosition = await store.getters["getLastSearch"];
+      const lastPosition = await store.getters['getLastSearch'];
 
-  // Verifica se `lastPosition` é um array ou apenas um objeto
-  const results = Array.isArray(lastPosition) ? lastPosition : [lastPosition];
+      const results = Array.isArray(lastPosition)
+        ? lastPosition
+        : [lastPosition];
 
-  // Validação para o caso de um único objeto ou resultados vazios
-  if (results.length === 0) {
-    console.log("Nenhum equipamento encontrado.");
-    return;
-  }
+      if (results.length === 0) {
+        return;
+      }
 
-  for (const element of results) {
-    const icon = await store.dispatch("colorIcon", element);
+      for (const element of results) {
+        const icon = await store.dispatch('colorIcon', element);
 
-    equipments.push({
-      equipmentModel: element.codeName,
-      equipmentName: element.popularName,
-      status: element.state[0].status,
-      lat: parseFloat(element.positions[0].lat),
-      lng: parseFloat(element.positions[0].lon),
-      icon: icon,
-    });
-  }
+        equipments.push({
+          equipmentModel: element.codeName,
+          equipmentName: element.popularName,
+          status: element.state[0].status,
+          lat: parseFloat(element.positions[0].lat),
+          lng: parseFloat(element.positions[0].lon),
+          icon: icon
+        });
+      }
 
-  console.log(equipments);
-  positions.value = equipments;
-};
-
+      console.log(equipments);
+      positions.value = equipments;
+    };
 
     onMounted(async () => {
-      store.dispatch("populateFields");
-      const initialPositions = await store.dispatch("initPositions");
+      store.dispatch('populateFields');
+      const initialPositions = await store.dispatch('initPositions');
       positions.value = initialPositions;
     });
 
@@ -96,14 +94,14 @@ export default defineComponent({
       selectedOption,
       items,
       positions,
-      search,
+      search
     };
-  },
+  }
 });
 </script>
 
 <style lang="scss">
-@use "../styles/settings.scss";
+@use '../styles/settings.scss';
 
 .trackingMachine {
   display: flex;
