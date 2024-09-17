@@ -50,27 +50,40 @@ export default defineComponent({
     ];
 
     const search = async () => {
-      let equipments = new Array();
-      await store.dispatch("search", {
-        selection: selectedOption.value,
-        input: dataInput.value,
-      });
-      const lastPosition = await store.getters["getLastSearch"];
-      for (const element of lastPosition) {
-        const icon = await store.dispatch("colorIcon", element);
+  let equipments = new Array();
+  await store.dispatch("search", {
+    selection: selectedOption.value,
+    input: dataInput.value,
+  });
 
-        equipments.push({
-          equipmentModel: element.codeName,
-          equipmentName: element.popularName,
-          status: element.state[0].status,
-          lat: parseFloat(element.positions[0].lat),
-          lng: parseFloat(element.positions[0].lon),
-          icon: icon,
-        });
-      }
-      console.log(equipments);
-      positions.value = equipments;
-    };
+  const lastPosition = await store.getters["getLastSearch"];
+
+  // Verifica se `lastPosition` é um array ou apenas um objeto
+  const results = Array.isArray(lastPosition) ? lastPosition : [lastPosition];
+
+  // Validação para o caso de um único objeto ou resultados vazios
+  if (results.length === 0) {
+    console.log("Nenhum equipamento encontrado.");
+    return;
+  }
+
+  for (const element of results) {
+    const icon = await store.dispatch("colorIcon", element);
+
+    equipments.push({
+      equipmentModel: element.codeName,
+      equipmentName: element.popularName,
+      status: element.state[0].status,
+      lat: parseFloat(element.positions[0].lat),
+      lng: parseFloat(element.positions[0].lon),
+      icon: icon,
+    });
+  }
+
+  console.log(equipments);
+  positions.value = equipments;
+};
+
 
     onMounted(async () => {
       store.dispatch("populateFields");
