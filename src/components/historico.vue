@@ -10,6 +10,7 @@
         append-inner-icon="mdi-magnify"
         v-model="dataInput"
         @click:append-inner="search('model', dataInput)"
+        @keyup.enter="search('model', dataInput)"
       ></v-text-field>
     </div>
     <div id="table">

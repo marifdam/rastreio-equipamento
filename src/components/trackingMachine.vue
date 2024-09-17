@@ -19,6 +19,7 @@
         append-inner-icon="mdi-magnify"
         v-model="dataInput"
         @click:append-inner="search"
+        @keyup.enter="search"
       ></v-text-field>
     </div>
     <GoogleMaps class="maps" :positions="positions"></GoogleMaps>
@@ -79,7 +80,6 @@ export default defineComponent({
         });
       }
 
-      console.log(equipments);
       positions.value = equipments;
     };
 
