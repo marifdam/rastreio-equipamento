@@ -11,6 +11,7 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    base: '/rastreio-equipamento/',
   plugins: [
     VueRouter(),
     Vue({
@@ -51,5 +52,4 @@ export default defineConfig({
   optimizeDeps: {
     include: ["fast-deep-equal"],
   },
-  base: '/rastreio-equipamento/',
 });
