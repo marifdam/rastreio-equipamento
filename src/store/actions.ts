@@ -118,27 +118,24 @@ export const actions = {
     const database = context.getters['getDatabase'];
     let equipment = new Array();
     const { selection, input } = payload;
+    const normalizedInput = input.trim().toLowerCase();
     if (selection === 'model') {
-      equipment = await database.find((model: any) => {
-        if (model.codeName === input.trim()) {
-          return model;
-        }
-      });
+      equipment = database.filter((item: any) => item.codeName.toLowerCase() === normalizedInput);
     }
     if (selection === 'state') {
-      equipment = database.filter((item: any) => item.state[0].status == input);
+      equipment = database.filter((item: any) => item.state[0].status.toLowerCase() === normalizedInput);
     }
     if (selection === 'name') {
-      equipment = database.filter((item: any) => item.popularName == input);
+      equipment = database.filter((item: any) => item.popularName.toLowerCase() === normalizedInput);
     }
     context.commit('setLastSearch', equipment);
     return equipment;
   },
   async initPositions(context: ActionContext<State, State>) {
-    const database = await context.getters['getDatabase'];
-    let equipmentAndPosition = new Array();
-    database.forEach(async (element: any) => {
-      let icons = await context.dispatch('colorIcon', element);
+    const database = context.getters['getDatabase'];
+    const equipmentAndPosition = new Array();
+    for (const element of database) {
+      const icon = await context.dispatch('colorIcon', element);
       equipmentAndPosition.push({
         equipmentModel: element.codeName,
         equipmentName: element.popularName,
@@ -146,9 +143,9 @@ export const actions = {
         statusColor: element.state[0].statusColor,
         lat: element.positions[0].lat,
         lng: element.positions[0].lon,
-        icon: String(icons)
+        icon: String(icon)
       });
-    });
+    }
     return equipmentAndPosition;
   },
   colorIcon(context: ActionContext<State, State>, database: any) {

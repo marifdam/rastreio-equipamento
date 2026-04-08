@@ -45,28 +45,24 @@ export default defineComponent({
     let positions = ref<Position[]>([]);
     const selectedOption = ref('Selecione');
     const items = [
-      { title: 'ESTADO', value: 'state' },
+      { title: 'SITUAÇÃO', value: 'state' },
       { title: 'MODELO', value: 'model' },
       { title: 'NOME', value: 'name' }
     ];
 
     const search = async () => {
-      let equipments = new Array();
       await store.dispatch('search', {
         selection: selectedOption.value,
         input: dataInput.value
       });
 
-      const lastPosition = await store.getters['getLastSearch'];
+      const results = store.getters['getLastSearch'];
 
-      const results = Array.isArray(lastPosition)
-        ? lastPosition
-        : [lastPosition];
-
-      if (results.length === 0) {
+      if (!Array.isArray(results) || results.length === 0) {
         return;
       }
 
+      const equipments = [];
       for (const element of results) {
         const icon = await store.dispatch('colorIcon', element);
 
@@ -74,8 +70,8 @@ export default defineComponent({
           equipmentModel: element.codeName,
           equipmentName: element.popularName,
           status: element.state[0].status,
-          lat: parseFloat(element.positions[0].lat),
-          lng: parseFloat(element.positions[0].lon),
+          lat: element.positions[0].lat,
+          lng: element.positions[0].lon,
           icon: icon
         });
       }
@@ -84,7 +80,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      store.dispatch('populateFields');
+      await store.dispatch('populateFields');
       const initialPositions = await store.dispatch('initPositions');
       positions.value = initialPositions;
     });
@@ -133,6 +129,5 @@ export default defineComponent({
   width: 100%;
   max-width: 800px;
   height: 400px;
-  margin-right: 19rem;
 }
 </style>
